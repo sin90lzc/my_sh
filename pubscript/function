@@ -1,0 +1,33 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function getDir(){
+	if [ -e $1 ];then
+	d=0	
+	dd=0
+		if [ ${1:0:1} = '/' ];then
+			$(dirname $1) && return 0
+		fi	 	
+		if [ ${1:0:2} = './' ];then
+			$(dirname $(pwd)/${1:2}) && return 0	
+		fi
+	fi
+	which $1 > /etc/null 2>&1 && $(dirname $(which $1)) && return 0
+	dirname $1
+}
