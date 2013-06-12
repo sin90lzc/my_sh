@@ -1,0 +1,16 @@
+#!/bin/bash
+CSCOPE_FILES=cscope.files
+
+[ $# -le 1 ] && echo "请提供需要建立索引的c文件" && exit 1
+
+gcc -M $1 | cut -d ":" -f 2 | sed 's/\\//g' | cut -d " " -f 1- | sed 's/ /\n/g' | cat -s > $CSCOPE_FILES
+
+if [ $? -eq 0 ];then
+	cscope -bqi $CSCOPE_FILES
+	rm -f $CSCOPE_FILES
+	exit 0
+else
+	[ -e $CSCOPE_FILES ] && rm -f $CSCOPE_FILES
+	exit 1
+fi
+
