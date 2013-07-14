@@ -16,6 +16,14 @@
 #									    QQ:20170748
 ####################################################################################################
 
+#引入公共配置
+. /etc/pubscript/config
+
+#引入公共函数
+. ${PUB_SCRIPT_PATH}/function
+
+SEE_HELP=
+
 #here document
 function help(){
 	cat <<HERE_DOCUMENT
@@ -25,20 +33,43 @@ return 0
 }
 
 #去掉指令名
-shift
+#shift
+
 #解释指令参数
-while [ -n "$1" ] ; do
+while [ $# -gt 0 ] ; do
 	case $1 in
 		-h|--help)
 			help
 			shift
 			;;
-		*)
+		-s|--symbol)
 			shift
-
+			SYMBOL=$1
+			shift
+			;;
+		-g|--gccflags)
+			shift
+			GCC_FLAGS=$1
+			shift
+			;;
+		--)	##stop option
+			shift;break
+			;;
+		-*)
+			log -l 1 "unknown option:$1"
+			;;
+		*)
+			arg=$1
+			shift
+			if [ $# -ge 0 ];then
+				SRC_FILE=$arg
+			else
+				log -l 1 "${SEE_HELP}"
+			fi
 		;;
 	esac
 done
 
+#参数校验
 
 exit 0
