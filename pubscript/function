@@ -51,15 +51,18 @@ function log(){
 	case $LEVEL in
 		0)
 			PREFIX="info:"	
+			cat_msg "${PREFIX}${MESSAGE}"
 			;;
 		1)
 			PREFIX="*** error:"
+			cat_msg "${PREFIX}${MESSAGE}" 1>&2
+			exit 1
 			;;
 		2)	
 			PREFIX="warning:"
+			cat_msg "${PREFIX}${MESSAGE}"
 			;;
 	esac
 
-	cat_msg "${PREFIX}${MESSAGE}"
 	return 0;
 }

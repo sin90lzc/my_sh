@@ -1,0 +1,104 @@
+#!/bin/bash
+
+####################################################################################################
+#
+#Description:
+#	能够查询c源文件中的某个符号是在哪里定义的，比如说__STRING这个宏符号
+#
+#Sysnopsis:
+#	findCdef [options] -s symbol cfile
+#	查找cfile中的某个符号symbol的定义
+#
+#Options：
+#	-g,--gccflags flags
+#		有时候必须要提供gcc的选项，比如说-I选项	
+#
+#	-s,--symbol
+#		what symbol you want to query
+#History:
+#	Sun Jul 14 23:04:22 CST 2013	初稿
+#
+#									Author:tim
+#									 Email:lzcgame@126.com	
+#									    QQ:20170748
+####################################################################################################
+
+#引入公共配置
+. /etc/pubscript/config
+
+#引入公共函数
+. ${PUB_SCRIPT_PATH}/function
+
+
+SEE_HELP="please see 'findCdef --help' for help"
+
+
+#here document
+function help(){
+	cat <<HERE_DOCUMENT
+usage:
+	findCdef [options] -s symbol cfile
+	查找cfile中的某个符号symbol的定义
+
+	-g,--gccflags flags
+		有时候必须要提供gcc的选项，比如说-I选项	
+
+	-s,--symbol
+		what symbol you want to query
+HERE_DOCUMENT
+return 0
+}
+
+#去掉指令名
+#shift
+
+#解释指令参数
+while [ $# -gt 0 ] ; do
+	case $1 in
+		-h|--help)
+			help
+			shift
+			;;
+		-s|--symbol)
+			shift
+			SYMBOL=$1
+			shift
+			;;
+		-g|--gccflags)
+			shift
+			GCC_FLAGS=$1
+			shift
+			;;
+		--)	##stop option
+			shift;break
+			;;
+		-*)
+			log -l 1 "unknown option:$1"
+			;;
+		*)
+			arg=$1
+			shift
+			if [ $# -ge 0 ];then
+				SRC_FILE=$arg
+			else
+				log -l 1 "${SEE_HELP}"
+			fi
+		;;
+	esac
+done
+
+#参数校验
+if [ -z ${SRC_FILE} ];then
+	log -l 1 "${SEE_HELP}"
+fi
+
+if [ -z ${SYMBOL} ];then
+	log -l 1 "must provide -s option!"
+fi
+
+
+QRY_FILES=$(gcc -M ${GCC_FLAGS} ${SRC_FILE} | cut -d ":" -f2 | sed 's/\\//' )
+
+grep -e "${SYMBOL}" ${QRY_FILES}
+
+exit 0
