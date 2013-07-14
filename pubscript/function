@@ -1,22 +1,12 @@
+#用于打印信息
+function cat_msg(){
+	cat << CAT_MSG
+$1
+CAT_MSG
 
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#返回参数对应的路径，支持真实存在的文件，而不是简单的取最后一个"/"之前的部分。
 function getDir(){
 	if [ -e $1 ];then
 	d=0	
@@ -30,4 +20,46 @@ function getDir(){
 	fi
 	which $1 > /etc/null 2>&1 && $(dirname $(which $1)) && return 0
 	dirname $1
+}
+
+#用于打印日志，用法如下：
+#log [options] msg
+#options:
+#-l,--level，指定日志等级，0为info，1为error，2为warin
+function log(){
+	LEVEL=0
+	MESSAGE=
+	PREFIX=info:
+	#解释指令参数
+	while [ -n "$1" ] ; do
+		case $1 in
+			-l|--level)
+				shift
+				LEVEL=$1
+				;;
+			-m|--message)
+				shift
+				MESSAGE=$1	
+				;;
+			*)
+				MESSAGE=$1
+				shift
+			;;
+		esac
+	done
+
+	case $LEVEL in
+		0)
+			PREFIX="info:"	
+			;;
+		1)
+			PREFIX="*** error:"
+			;;
+		2)	
+			PREFIX="warning:"
+			;;
+	esac
+
+	cat_msg "${PREFIX}${MESSAGE}"
+	return 0;
 }
