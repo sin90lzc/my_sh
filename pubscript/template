@@ -16,7 +16,7 @@
 #									    QQ:20170748
 ####################################################################################################
 
-
+#here document
 function help(){
 	cat <<HERE_DOCUMENT
 
@@ -24,4 +24,21 @@ HERE_DOCUMENT
 return 0
 }
 
+#去掉指令名
+shift
+#解释指令参数
+while [ -n "$1" ] ; do
+	case $1 in
+		-h|--help)
+			help
+			shift
+			;;
+		*)
+			shift
 
+		;;
+	esac
+done
+
+
+exit 0
